@@ -10,23 +10,36 @@
   <div class="top-bar">
     <h2 id="title">Kalkulyator</h2>
     <div class="controls">
+<<<<<<< HEAD
       <select id="languageSelect" onchange="changeLang(this.value)">
         <option value="uz">🇺🇿</option>
         <option value="ru">🇷🇺</option>
         <option value="en">en</option>
       </select>
+=======
+      <button class="toggle-lang" onclick="toggleLang()">🇺🇿/🇷🇺</button>
+>>>>>>> 446a5049e804ffc71a06113b537894675ca18d98
       <button class="toggle-mode" onclick="toggleMode()">🌙</button>
     </div>
   </div>
 
   <div class="menu" id="mainMenu">
     <h2 id="menuTitle">Xizmatni tanlang:</h2>
+<<<<<<< HEAD
     <button onclick="showSection('calc')" id="calcBtn">🔢 Kalkulyator</button>
     <button onclick="showSection('convert')" id="convertBtn">💱 Valyuta Konvertori</button>
   </div>
 
   <div class="calculator" id="calculator" style="display:none;">
     <h2 id="titleCalc">Kalkulyator</h2>
+=======
+    <button onclick="showSection('calc')">🔢 Kalkulyator</button>
+    <button onclick="showSection('convert')">💱 Valyuta Konvertori</button>
+  </div>
+
+  <div class="calculator" id="calculator" style="display:none;">
+    <h2 id="title">Kalkulyator</h2>
+>>>>>>> 446a5049e804ffc71a06113b537894675ca18d98
     <input type="number" id="num1" placeholder="1-son" />
     <input type="number" id="num2" placeholder="2-son" />
     <select id="operation">
@@ -38,8 +51,13 @@
     <button onclick="calculate()" id="calculateBtn">Hisobla</button>
     <div id="result" class="result"></div>
     <div id="history" class="history"></div>
+<<<<<<< HEAD
     <button onclick="clearHistory()" id="clearHistoryBtn">🧹 Tarixni tozalash</button>
     <button onclick="backToMenu()" id="backBtn">⬅️ Ortga</button>
+=======
+    <button onclick="clearHistory()">🧹 Tarixni tozalash</button>
+    <button onclick="backToMenu()">⬅️ Ortga</button>
+>>>>>>> 446a5049e804ffc71a06113b537894675ca18d98
   </div>
 
   <div class="calculator" id="converter" style="display:none;">
@@ -47,9 +65,16 @@
     <input type="number" id="amount" placeholder="Miqdor" />
     <select id="fromCurrency"></select>
     <select id="toCurrency"></select>
+<<<<<<< HEAD
     <button onclick="convertCurrency()" id="convertButton">Konvertatsiya</button>
     <div id="convertedResult" class="result"></div>
     <button onclick="backToMenu()" id="backBtn2">⬅️ Ortga</button>
+=======
+    <button onclick="convertCurrency()">Konvertatsiya</button>
+    <div id="convertedResult" class="result"></div>
+    <div id="topRates" class="history"></div>
+    <button onclick="backToMenu()">⬅️ Ortga</button>
+>>>>>>> 446a5049e804ffc71a06113b537894675ca18d98
   </div>
 
   <div class="footer" id="footer">Created by Khamidkhanov Muhammadzohid</div>
@@ -61,6 +86,7 @@
     const historyArr = [];
     let exchangeRates = {};
 
+<<<<<<< HEAD
     const texts = {
       uz: {
         service: "Xizmatni tanlang:",
@@ -137,12 +163,59 @@
       op[1].text = t.subtract;
       op[2].text = t.multiply;
       op[3].text = t.divide;
+=======
+    async function fetchRates() {
+      const response = await fetch('https://v6.exchangerate-api.com/v6/b619ef166163799d5ee3d2b9/latest/USD');
+      const data = await response.json();
+      exchangeRates = data.conversion_rates;
+      populateCurrencyDropdowns();
+      showTopRates();
+    }
+
+    function populateCurrencyDropdowns() {
+      const fromSelect = document.getElementById("fromCurrency");
+      const toSelect = document.getElementById("toCurrency");
+      fromSelect.innerHTML = toSelect.innerHTML = "";
+      for (let code in exchangeRates) {
+        fromSelect.innerHTML += `<option value="${code}">${code}</option>`;
+        toSelect.innerHTML += `<option value="${code}">${code}</option>`;
+      }
+      fromSelect.value = 'UZS';
+      toSelect.value = 'USD';
+    }
+
+    function showTopRates() {
+      const topDiv = document.getElementById("topRates");
+      let top10 = Object.entries(exchangeRates).slice(0, 10);
+      topDiv.innerHTML = `<strong>Top 10 kurslar (USD asosida):</strong><br>` +
+        top10.map(([code, rate]) => `${code}: ${rate}`).join("<br>");
+>>>>>>> 446a5049e804ffc71a06113b537894675ca18d98
     }
 
     function toggleMode() {
       document.body.classList.toggle("dark-mode");
     }
 
+<<<<<<< HEAD
+=======
+    function toggleLang() {
+      currentLang = currentLang === 'uz' ? 'ru' : 'uz';
+      document.getElementById('menuTitle').textContent = currentLang === 'uz' ? 'Xizmatni tanlang:' : 'Выберите услугу:';
+      document.getElementById('title').textContent = currentLang === 'uz' ? 'Kalkulyator' : 'Калькулятор';
+      document.getElementById('converterTitle').textContent = currentLang === 'uz' ? 'Valyuta Konvertori' : 'Конвертер Валют';
+      document.getElementById('num1').placeholder = currentLang === 'uz' ? '1-son' : '1-число';
+      document.getElementById('num2').placeholder = currentLang === 'uz' ? '2-son' : '2-число';
+      document.getElementById('calculateBtn').textContent = currentLang === 'uz' ? 'Hisobla' : 'Вычислить';
+      document.getElementById('amount').placeholder = currentLang === 'uz' ? 'Miqdor' : 'Сумма';
+      document.getElementById('footer').textContent = currentLang === 'uz' ? 'Created by Khamidkhanov Muhammadzohid' : 'Создано: Хамидханов Мухаммадзохид';
+      const op = document.getElementById('operation').options;
+      op[0].text = currentLang === 'uz' ? '➕ Qo‘shish' : '➕ Сложение';
+      op[1].text = currentLang === 'uz' ? '➖ Ayirish' : '➖ Вычитание';
+      op[2].text = currentLang === 'uz' ? '✖️ Ko‘paytirish' : '✖️ Умножение';
+      op[3].text = currentLang === 'uz' ? '➗ Bo‘lish' : '➗ Деление';
+    }
+
+>>>>>>> 446a5049e804ffc71a06113b537894675ca18d98
     function showSection(type) {
       document.getElementById("mainMenu").style.display = "none";
       document.getElementById("calculator").style.display = type === 'calc' ? "block" : "none";
@@ -167,10 +240,19 @@
         case 'multiply': result = num1 * num2; break;
         case 'divide': result = num2 !== 0 ? num1 / num2 : '∞'; break;
       }
+<<<<<<< HEAD
       const resText = `${texts[currentLang].result}: ${result}`;
       document.getElementById("result").textContent = resText;
       historyArr.unshift(`${num1} ${getSymbol(op)} ${num2} = ${result}`);
       document.getElementById("history").innerHTML = `<strong>${texts[currentLang].history}:</strong><br>` + historyArr.slice(0, 10).join("<br>");
+=======
+      const resText = `${currentLang === 'uz' ? 'Natija' : 'Результат'}: ${result}`;
+      document.getElementById("result").textContent = resText;
+      historyArr.unshift(`${num1} ${getSymbol(op)} ${num2} = ${result}`);
+      document.getElementById("history").innerHTML =
+        `<strong>${currentLang === 'uz' ? 'Tarix' : 'История'}:</strong><br>` +
+        historyArr.slice(0, 10).join("<br>");
+>>>>>>> 446a5049e804ffc71a06113b537894675ca18d98
     }
 
     function getSymbol(op) {
@@ -182,6 +264,7 @@
       document.getElementById("history").innerHTML = "";
     }
 
+<<<<<<< HEAD
     async function fetchRates() {
       const response = await fetch('https://v6.exchangerate-api.com/v6/b619ef166163799d5ee3d2b9/latest/USD');
       const data = await response.json();
@@ -201,6 +284,8 @@
       toSelect.value = 'USD';
     }
 
+=======
+>>>>>>> 446a5049e804ffc71a06113b537894675ca18d98
     function convertCurrency() {
       const amount = parseFloat(document.getElementById("amount").value);
       const from = document.getElementById("fromCurrency").value;
@@ -208,10 +293,18 @@
       if (!exchangeRates[from] || !exchangeRates[to]) return;
       const usdAmount = amount / exchangeRates[from];
       const converted = usdAmount * exchangeRates[to];
+<<<<<<< HEAD
       document.getElementById("convertedResult").textContent = `${texts[currentLang].result}: ${converted.toFixed(2)} ${to}`;
+=======
+      document.getElementById("convertedResult").textContent = `${currentLang === 'uz' ? 'Natija' : 'Результат'}: ${converted.toFixed(2)} ${to}`;
+>>>>>>> 446a5049e804ffc71a06113b537894675ca18d98
     }
 
     window.onload = fetchRates;
   </script>
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+>>>>>>> 446a5049e804ffc71a06113b537894675ca18d98
