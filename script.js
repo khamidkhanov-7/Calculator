@@ -1,115 +1,134 @@
-let currentLang = 'uz';
-const sound = document.getElementById("clickSound");
-const historyArr = [];
-const rates = {}; // dynamic kurslar
-const baseCurrency = 'UZS';
-
-// API orqali kurslarni olish
-async function fetchRates() {
-  try {
-    const res = await fetch(`https://v6.exchangerate-api.com/v6/YOUR_API_KEY/latest/${baseCurrency}`);
-    const data = await res.json();
-    Object.assign(rates, data.conversion_rates);
-    showTopRates();
-  } catch (e) {
-    console.error("Kurslarni yuklashda xatolik:", e);
+const translations = {
+  uz: {
+    title: "Kalkulyator Pro",
+    menuTitle: "Xizmatni tanlang:",
+    calcBtn: "🧮 Kalkulyator",
+    convertBtn: "💱 Valyuta Konvertori",
+    lifeBtn: "📅 Yashash Hisoblagichi",
+    titleCalc: "Kalkulyator",
+    calculateBtn: "Hisobla",
+    clearHistoryBtn: "🧹 Tarixni tozalash",
+    backBtn: "⬅️ Ortga",
+    converterTitle: "Valyuta Konvertori",
+    convertButton: "Konvertatsiya",
+    lifeTitle: "📅 Yashash Hisoblagichi",
+    birthLabel: "Tug‘ilgan sanangizni kiriting:",
+    lifeCalculateBtn: "Hisobla",
+    footer: "Created by Khamidkhanov Muhammadzohid"
+  },
+  ru: {
+    title: "Калькулятор Про",
+    menuTitle: "Выберите сервис:",
+    calcBtn: "🧮 Калькулятор",
+    convertBtn: "💱 Конвертер валют",
+    lifeBtn: "📅 Калькулятор жизни",
+    titleCalc: "Калькулятор",
+    calculateBtn: "Вычислить",
+    clearHistoryBtn: "🧹 Очистить историю",
+    backBtn: "⬅️ Назад",
+    converterTitle: "Конвертер валют",
+    convertButton: "Конвертировать",
+    lifeTitle: "📅 Калькулятор жизни",
+    birthLabel: "Введите дату рождения:",
+    lifeCalculateBtn: "Вычислить",
+    footer: "Created by Khamidkhanov Muhammadzohid"
+  },
+  en: {
+    title: "Calculator Pro",
+    menuTitle: "Choose Service:",
+    calcBtn: "🧮 Calculator",
+    convertBtn: "💱 Currency Converter",
+    lifeBtn: "📅 Life Calculator",
+    titleCalc: "Calculator",
+    calculateBtn: "Calculate",
+    clearHistoryBtn: "🧹 Clear History",
+    backBtn: "⬅️ Back",
+    converterTitle: "Currency Converter",
+    convertButton: "Convert",
+    lifeTitle: "📅 Life Calculator",
+    birthLabel: "Enter your birth date:",
+    lifeCalculateBtn: "Calculate",
+    footer: "Created by Khamidkhanov Muhammadzohid"
   }
+};
+
+function changeLang(lang) {
+  document.getElementById("title").innerText = translations[lang].title;
+  document.getElementById("menuTitle").innerText = translations[lang].menuTitle;
+  document.getElementById("calcBtn").innerText = translations[lang].calcBtn;
+  document.getElementById("convertBtn").innerText = translations[lang].convertBtn;
+  document.getElementById("lifeBtn").innerText = translations[lang].lifeBtn;
+  document.getElementById("titleCalc").innerText = translations[lang].titleCalc;
+  document.getElementById("calculateBtn").innerText = translations[lang].calculateBtn;
+  document.getElementById("clearHistoryBtn").innerText = translations[lang].clearHistoryBtn;
+  document.getElementById("backBtn").innerText = translations[lang].backBtn;
+  document.getElementById("converterTitle").innerText = translations[lang].converterTitle;
+  document.getElementById("convertButton").innerText = translations[lang].convertButton;
+  document.getElementById("backBtn2").innerText = translations[lang].backBtn;
+  document.getElementById("lifeTitle").innerText = translations[lang].lifeTitle;
+  document.getElementById("birthLabel").innerText = translations[lang].birthLabel;
+  document.getElementById("lifeCalculateBtn").innerText = translations[lang].lifeCalculateBtn;
+  document.getElementById("backBtn3").innerText = translations[lang].backBtn;
+  document.getElementById("footer").innerText = translations[lang].footer;
+}
+
+function showSection(section) {
+  document.getElementById("mainMenu").style.display = "none";
+  document.getElementById("calculator").style.display = section === "calc" ? "block" : "none";
+  document.getElementById("converter").style.display = section === "convert" ? "block" : "none";
+  document.getElementById("lifeCalc").style.display = section === "life" ? "block" : "none";
+}
+
+function backToMenu() {
+  document.getElementById("calculator").style.display = "none";
+  document.getElementById("converter").style.display = "none";
+  document.getElementById("lifeCalc").style.display = "none";
+  document.getElementById("mainMenu").style.display = "block";
 }
 
 function toggleMode() {
   document.body.classList.toggle("dark-mode");
 }
 
-function toggleLang() {
-  currentLang = currentLang === 'uz' ? 'ru' : 'uz';
-
-  document.getElementById('menuTitle').textContent = currentLang === 'uz' ? 'Xizmatni tanlang:' : 'Выберите услугу:';
-  document.getElementById('title').textContent = currentLang === 'uz' ? 'Kalkulyator' : 'Калькулятор';
-  document.getElementById('converterTitle').textContent = currentLang === 'uz' ? 'Valyuta Konvertori' : 'Конвертер Валют';
-  document.getElementById('num1').placeholder = currentLang === 'uz' ? '1-son' : '1-число';
-  document.getElementById('num2').placeholder = currentLang === 'uz' ? '2-son' : '2-число';
-  document.getElementById('calculateBtn').textContent = currentLang === 'uz' ? 'Hisobla' : 'Вычислить';
-  document.getElementById('amount').placeholder = currentLang === 'uz' ? 'Miqdor (UZS)' : 'Сумма (UZS)';
-  document.getElementById('footer').textContent = currentLang === 'uz'
-    ? 'Created by Khamidkhanov Muhammadzohid'
-    : 'Создано: Хамидханов Мухаммадзохид';
-
-  const op = document.getElementById('operation').options;
-  op[0].text = currentLang === 'uz' ? '➕ Qo‘shish' : '➕ Сложение';
-  op[1].text = currentLang === 'uz' ? '➖ Ayirish' : '➖ Вычитание';
-  op[2].text = currentLang === 'uz' ? '✖️ Ko‘paytirish' : '✖️ Умножение';
-  op[3].text = currentLang === 'uz' ? '➗ Bo‘lish' : '➗ Деление';
-}
-
-function showSection(type) {
-  document.getElementById("mainMenu").style.display = "none";
-  document.getElementById("calculator").style.display = type === 'calc' ? "block" : "none";
-  document.getElementById("converter").style.display = type === 'convert' ? "block" : "none";
-}
-
-function backToMenu() {
-  document.getElementById("mainMenu").style.display = "block";
-  document.getElementById("calculator").style.display = "none";
-  document.getElementById("converter").style.display = "none";
-}
-
-async function calculate() {
-  try { await sound.play(); } catch {}
+function calculate() {
   const num1 = parseFloat(document.getElementById("num1").value);
   const num2 = parseFloat(document.getElementById("num2").value);
   const op = document.getElementById("operation").value;
+  let res = "";
 
-  let result;
-  switch(op) {
-    case 'add': result = num1 + num2; break;
-    case 'subtract': result = num1 - num2; break;
-    case 'multiply': result = num1 * num2; break;
-    case 'divide': result = num2 !== 0 ? num1 / num2 : '∞'; break;
+  if (isNaN(num1) || isNaN(num2)) {
+    res = "Sonlarni to‘liq kiriting!";
+  } else {
+    switch (op) {
+      case "add": res = num1 + num2; break;
+      case "subtract": res = num1 - num2; break;
+      case "multiply": res = num1 * num2; break;
+      case "divide": res = num2 !== 0 ? num1 / num2 : "Nolga bo‘lish mumkin emas!"; break;
+    }
   }
 
-  const resText = `${currentLang === 'uz' ? 'Natija' : 'Результат'}: ${result}`;
-  document.getElementById("result").textContent = resText;
-
-  historyArr.unshift(`${num1} ${getSymbol(op)} ${num2} = ${result}`);
-  document.getElementById("history").innerHTML =
-    `<strong>${currentLang === 'uz' ? 'Tarix' : 'История'}:</strong><br>` +
-    historyArr.slice(0, 10).join("<br>");
-}
-
-function getSymbol(op) {
-  return { add: '+', subtract: '−', multiply: '×', divide: '÷' }[op];
+  document.getElementById("result").innerText = res;
+  if (res !== "") {
+    const history = document.getElementById("history");
+    const entry = document.createElement("div");
+    entry.innerText = `${num1} ${op} ${num2} = ${res}`;
+    history.appendChild(entry);
+  }
 }
 
 function clearHistory() {
-  historyArr.length = 0;
   document.getElementById("history").innerHTML = "";
 }
 
-function convertCurrency() {
-  const amount = parseFloat(document.getElementById("amount").value);
-  const currency = document.getElementById("currency").value;
-  const rate = rates[currency.toUpperCase()];
-  const converted = amount / rate;
+function calculateAge() {
+  const birthDate = new Date(document.getElementById("birthDate").value);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
 
-  document.getElementById("convertedResult").textContent =
-    `${currentLang === 'uz' ? 'Natija' : 'Результат'}: ${converted.toFixed(2)} ${currency.toUpperCase()}`;
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+
+  document.getElementById("lifeResult").innerText = `Sizning yosh: ${age} yil`;
 }
-
-function showTopRates() {
-  const topDiv = document.getElementById('topRates');
-  if (!topDiv) return;
-
-  const sorted = Object.entries(rates)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10);
-
-  topDiv.innerHTML = `
-    <h3>${currentLang === 'uz' ? 'Top 10 Kurslar' : 'Топ 10 валют'}</h3>
-    <ul>
-      ${sorted.map(([code, rate]) => `<li><strong>${code}:</strong> ${rate}</li>`).join('')}
-    </ul>
-  `;
-}
-
-// Boshlanishda kurslarni olib kel
-fetchRates();
