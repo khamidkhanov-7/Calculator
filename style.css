@@ -33,7 +33,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
   width: 100%;
   padding: 10px;
   flex-wrap: wrap;
@@ -50,14 +49,12 @@ body {
   gap: 10px;
 }
 
-.mode-toggle,
-.lang-toggle,
-.menu-toggle {
-  font-size: 1.5rem;
+button {
   background: none;
   border: none;
   cursor: pointer;
   color: inherit;
+  font-size: 1.5rem;
 }
 
 .menu-toggle {
@@ -158,14 +155,12 @@ button {
   padding: 10px;
   border-radius: 6px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  display: none; /* default berilgan */
   min-width: 180px;
 }
 
-#menuPanel.show {
-  display: block; /* show class bo‘lsa ko‘rinadi */
+.hidden {
+  display: none;
 }
-
 
 .dark-mode #menuPanel {
   background: #2a2a2a;
@@ -187,10 +182,6 @@ button {
   background: var(--danger);
 }
 
-.hidden {
-  display: none;
-}
-
 /* Responsive */
 @media (max-width: 500px) {
   .container {
@@ -204,9 +195,5 @@ button {
   .header-buttons {
     flex-wrap: wrap;
     justify-content: center;
-  }
-
-  .menu-toggle {
-    font-size: 2rem;
   }
 }
