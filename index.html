@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Kalkulyator + Converter + Age</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+  <div class="header container">
+    <h1 id="appTitle">Smart Kalkulyator</h1>
+    <div class="header-buttons">
+      <button class="mode-toggle" id="modeToggle">🌙</button>
+      <button class="lang-toggle" id="langToggle">🌐 UZ</button>
+      <button class="menu-toggle" id="menuToggle">☰</button>
+    </div>
+  </div>
+  
+  <!-- Menu Panel -->
+  <div id="menuPanel" class="hidden">
+    <button onclick="showSection('converter')">💱 <span id="menuConverter">Konvertor</span></button>
+    <button onclick="showSection('age')">🎂 <span id="menuAge">Yosh hisoblash</span></button>
+    <button onclick="hideMenu()">❌ <span id="menuClose">Yopish</span></button>
+  </div>
+
+  <!-- Main Calculator Section -->
+  <div class="container" id="mainSection">
+    <div class="screen" id="display">0</div>
+    <div class="buttons-grid">
+      <button class="btn clear" onclick="clearAll()">C</button>
+      <button class="btn op" onclick="deleteLast()">⌫</button>
+      <button class="btn op" onclick="append('%')">%</button>
+      <button class="btn op" onclick="append('/')">÷</button>
+
+      <button class="btn number" onclick="append('7')">7</button>
+      <button class="btn number" onclick="append('8')">8</button>
+      <button class="btn number" onclick="append('9')">9</button>
+      <button class="btn op" onclick="append('*')">×</button>
+
+      <button class="btn number" onclick="append('4')">4</button>
+      <button class="btn number" onclick="append('5')">5</button>
+      <button class="btn number" onclick="append('6')">6</button>
+      <button class="btn op" onclick="append('-')">−</button>
+
+      <button class="btn number" onclick="append('1')">1</button>
+      <button class="btn number" onclick="append('2')">2</button>
+      <button class="btn number" onclick="append('3')">3</button>
+      <button class="btn op" onclick="append('+')">+</button>
+
+      <button class="btn number" onclick="append('0')">0</button>
+      <button class="btn number" onclick="append('.')">.</button>
+      <button class="btn equal" onclick="calculate()">=</button>
+    </div>
+
+    <div class="section">
+      <h3>📜 <span id="historyTitle">Tarix</span></h3>
+      <div id="history" style="max-height:120px; overflow-y:auto;"></div>
+      <button onclick="clearHistory()" id="clearHistoryBtn">Tarixni tozalash</button>
+    </div>
+  </div>
+
+  <!-- Converter Section -->
+  <div class="container hidden" id="converterSection">
+    <button onclick="backToMain()">⬅️ Orqaga</button>
+    <h3>💱 <span id="converterTitle">Valyuta Konvertori</span></h3>
+    <input type="number" id="amount" placeholder="Miqdor">
+    <select id="fromCur"></select>
+    <select id="toCur"></select>
+    <button onclick="convertCur()" id="convertBtn">Konvert qilish</button>
+    <div id="curResult"></div>
+  </div>
+
+  <!-- Age Calculator Section -->
+  <div class="container hidden" id="ageSection">
+    <button onclick="backToMain()">⬅️ Orqaga</button>
+    <h3>🎂 <span id="ageCalcTitle">Yosh hisoblash</span></h3>
+    <input type="date" id="birthdate">
+    <button onclick="calculateAge()" id="ageBtn">Hisoblash</button>
+    <div id="ageResult"></div>
+  </div>
+
+  <div class="footer">Created by Khamidkhanov Muhammadzohid</div>
+
+  <script>
+    let expr = "", curRates = {}, historyArr = [];
+    const display = document.getElementById('display');
+    const langs = ["uz", "ru", "en"];
+    let langIndex = 0;
+
+    const translations = {
+      uz: {
+        appTitle: "Smart Kalkulyator",
+        menuConverter: "Konvertor",
+        menuAge: "Yosh hisoblash",
+        menuClose: "Yopish",
+        historyTitle: "Tarix",
+        clearHistoryBtn: "Tarixni tozalash",
+        converterTitle: "Valyuta Konvertori",
+        convertBtn: "Konvert qilish",
+        ageCalcTitle: "Yosh hisoblash",
+        ageBtn: "Hisoblash"
+      },
+      ru: {
+        appTitle: "Умный калькулятор",
+        menuConverter: "Конвертер",
+        menuAge: "Рассчитать возраст",
+        menuClose: "Закрыть",
+        historyTitle: "История",
+        clearHistoryBtn: "Очистить историю",
+        converterTitle: "Конвертер валют",
+        convertBtn: "Конвертировать",
+        ageCalcTitle: "Возраст",
+        ageBtn: "Рассчитать"
+      },
+      en: {
+        appTitle: "Smart Calculator",
+        menuConverter: "Converter",
+        menuAge: "Age Calculator",
+        menuClose: "Close",
+        historyTitle: "History",
+        clearHistoryBtn: "Clear History",
+        converterTitle: "Currency Converter",
+        convertBtn: "Convert",
+        ageCalcTitle: "Age Calculator",
+        ageBtn: "Calculate"
+      }
+    };
+
+    function toggleMode() {
+      document.body.classList.toggle('dark-mode');
+      document.getElementById('modeToggle').textContent = 
+        document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+    }
+
+    function toggleLang() {
+      langIndex = (langIndex + 1) % langs.length;
+      const lang = langs[langIndex];
+      document.getElementById('langToggle').textContent = "🌐 " + lang.toUpperCase();
+      
+      const t = translations[lang];
+      document.getElementById('appTitle').textContent = t.appTitle;
+      document.getElementById('menuConverter').textContent = t.menuConverter;
+      document.getElementById('menuAge').textContent = t.menuAge;
+      document.getElementById('menuClose').textContent = t.menuClose;
+      document.getElementById('historyTitle').textContent = t.historyTitle;
+      document.getElementById('clearHistoryBtn').textContent = t.clearHistoryBtn;
+      document.getElementById('converterTitle').textContent = t.converterTitle;
+      document.getElementById('convertBtn').textContent = t.convertBtn;
+      document.getElementById('ageCalcTitle').textContent = t.ageCalcTitle;
+      document.getElementById('ageBtn').textContent = t.ageBtn;
+    }
+
+    function append(c) {
+      if(display.textContent === '0') display.textContent = '';
+      display.textContent += c;
+      expr += c;
+    }
+
+    function clearAll() {
+      expr = ''; display.textContent = '0';
+    }
+
+    function deleteLast() {
+      expr = expr.slice(0, -1);
+      display.textContent = expr || '0';
+    }
+
+    function calculate() {
+      try {
+        const res = eval(expr.replace(/%/g, '/100'));
+        recordHistory(expr + ' = ' + res);
+        display.textContent = res;
+        expr = res.toString();
+      } catch {
+        display.textContent = 'Xato';
+        expr = '';
+      }
+    }
+
+    function recordHistory(item) {
+      historyArr.unshift(item);
+      if(historyArr.length > 10) historyArr.pop();
+      document.getElementById('history').innerHTML = historyArr.join('<br>');
+    }
+
+    function clearHistory() {
+      historyArr = [];
+      document.getElementById('history').innerHTML = '';
+    }
+
+    async function loadRates() {
+      const r = await fetch("https://v6.exchangerate-api.com/v6/b619ef166163799d5ee3d2b9/latest/USD");
+      const d = await r.json();
+      curRates = d.conversion_rates;
+      const from = document.getElementById('fromCur');
+      const to = document.getElementById('toCur');
+      [from, to].forEach(s => {
+        s.innerHTML = Object.keys(curRates).map(c => `<option>${c}</option>`).join('');
+      });
+      from.value = 'USD'; to.value = 'UZS';
+    }
+
+    function convertCur() {
+      const a = parseFloat(document.getElementById('amount').value);
+      const f = document.getElementById('fromCur').value;
+      const t = document.getElementById('toCur').value;
+      if(isNaN(a) || !curRates[f] || !curRates[t]) return;
+      const usd = a / curRates[f];
+      const conv = (usd * curRates[t]).toFixed(4);
+      const now = new Date().toLocaleString();
+      document.getElementById('curResult').textContent = `${a} ${f} = ${conv} ${t} (as of ${now})`;
+    }
+
+    function calculateAge() {
+      const dob = new Date(document.getElementById('birthdate').value);
+      if(!dob.getTime()) return;
+      const diff = Date.now() - dob.getTime();
+      const y = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24)) - y * 365;
+      document.getElementById('ageResult').textContent = `Sizning yoshingiz: ${y} yil, ${d} kun`;
+    }
+
+    document.getElementById('menuToggle').onclick = function() {
+      document.getElementById('menuPanel').classList.toggle('hidden');
+    };
+
+    function showSection(section) {
+      document.getElementById('menuPanel').classList.add('hidden');
+      document.getElementById('mainSection').classList.add('hidden');
+      document.getElementById('converterSection').classList.add('hidden');
+      document.getElementById('ageSection').classList.add('hidden');
+
+      if(section === 'converter') document.getElementById('converterSection').classList.remove('hidden');
+      if(section === 'age') document.getElementById('ageSection').classList.remove('hidden');
+    }
+
+    function hideMenu() {
+      document.getElementById('menuPanel').classList.add('hidden');
+    }
+
+    function backToMain() {
+      document.getElementById('converterSection').classList.add('hidden');
+      document.getElementById('ageSection').classList.add('hidden');
+      document.getElementById('mainSection').classList.remove('hidden');
+    }
+
+    document.getElementById('modeToggle').addEventListener('click', toggleMode);
+    document.getElementById('langToggle').addEventListener('click', toggleLang);
+
+    window.onload = loadRates;
+  </script>
+
+</body>
+</html>
